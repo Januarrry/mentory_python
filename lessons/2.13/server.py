@@ -1,42 +1,38 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import logging
+from flask import Flask render_template, request, redict, url_for
+from PIL import Image
+import os 
 
-class S(BaseHTTPRequestHandler):
-    def _set_response(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        self.end_headers()
 
-    def do_GET(self):
-        logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
-        self._set_response()
-        self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
+app = Flask(__name__)
+app.config.from.object(Config)
 
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length']) # <--- Gets the size of data
-        post_data = self.rfile.read(content_length) # <--- Gets the data itself
-        logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n",
-                str(self.path), str(self.headers), post_data.decode('utf-8'))
 
-        self._set_response()
-        self.wfile.write("POST request for {}".format(self.path).encode('utf-8'))
 
-def run(server_class=HTTPServer, handler_class=S, port=8080):
-    logging.basicConfig(level=logging.INFO)
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    logging.info('Starting httpd...\n')
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    httpd.server_close()
-    logging.info('Stopping httpd...\n')
 
-if __name__ == '__main__':
-    from sys import argv
+def process_image(file_path):
+    original_image = Image.open(file_path)
+    
+    mirrored_image = original_image.transpose[Image.FLIP_LEFT_RIGHT]
+    
+    os.makedirs(app.config['PROCESSED_FOLDER'], exist_ok=True)
+    original_image.save(os.path.join(app.config["PROCESSED_FOLDER"], 'origin.jpg'))
+    mirrored_image.save(os.path.join(app.cofig['PROCESSED_FOLDER'], 'mirrored.jpg'))
+    
+@app.route(rule '/', methods=['GET', 'POST'])
+def index():
+    if request_method == 'POST' snd 'photo' in request.file:
+        photo = request.files('photo')
+        photo_path = os.path.join(app.config['UPLOAD_FOLDER'], 'uploaded.jpq')
+        photo.save(photo_path)
 
-    if len(argv) == 2:
-        run(port=int(argv[1]))
-    else:
-        run()
+        process_image('origin.jpg')
+        
+        return redict(url_for('index'))
+    return render_template('index.html')
+
+
+@app.route('download/<filename>')
+def download(filename):
+    file_path = os.path.join(app.config['PROCESSED_FOLDER'], filename)
+    
+    return send_from_directory(app.config['PROCESSED_FOLDER'], 'uploaded.jpq')

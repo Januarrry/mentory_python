@@ -23,7 +23,7 @@
 #
 # input1: 120
 # input2: 100
-# output: "Your loss is 20"
+# output: "Your loss is 20%"
 #
 # input1: -200
 # input2: 0
@@ -46,15 +46,20 @@
 user_input1 = input("Type buy price: ")
 user_input2 = input("Type your sell price: ")
 
-
 if user_input2.isdigit() and user_input1.isdigit():
-    output = (int(user_input2) - int(user_input1)) / int(user_input2) * 100
-    if user_input2 < user_input1:
-        result = "Your loss is " + str(output) + "%"
-    elif user_input2 > user_input1:
-        result = "Your profit is " + str(output) + "%"
-    elif user_input1 == user_input2:
-        result = "Neutral " + str(output)
+    sell_price = int(user_input2)
+    buy_price = int(user_input1)
+
+    output = (sell_price - buy_price) / sell_price * 100
+    if output < 0:
+        output = output * (-1)
+    output_str = str(output)
+    if sell_price < buy_price:
+        result = "Your loss is " + output_str + "%"
+    elif sell_price > buy_price:
+        result = "Your profit is " + output_str + "%"
+    elif buy_price == sell_price:
+        result = "Neutral " + output_str
     print(result)
 else:
     print("Not acceptable")

@@ -3,7 +3,7 @@ files:
   - name: for_loop.py
     visible: true
     placeholders:
-      - offset: 258
+      - offset: 275
         length: 41
         placeholder_text: '# Loop over primes to print each of them.'
         initial_state:
